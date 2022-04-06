@@ -4,6 +4,8 @@ import com.hendisantika.entity.Kota;
 import com.hendisantika.entity.Provinsi;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 /**
  * Created by IntelliJ IDEA.
  * Project : spring-boot-wilayah-indonesia
@@ -14,5 +16,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Time: 07.14
  */
 public interface KotaRepository extends JpaRepository<Kota, String> {
-    Provinsi findByProvinsi(Provinsi provinsi);
+//    Kota findByProvinsi(String idProvinsi);
+
+    Optional<Kota> findByKode(String kode);
+
+    Iterable<Kota> findByProvinsi(Provinsi provinsi);
 }

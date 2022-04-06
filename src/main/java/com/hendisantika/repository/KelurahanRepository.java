@@ -14,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Time: 07.15
  */
 public interface KelurahanRepository extends JpaRepository<Kelurahan, String> {
-    Kecamatan findByKecamatan(Kecamatan kecamatan);
+    Kecamatan findByKecamatan(String idKecamatan);
 }

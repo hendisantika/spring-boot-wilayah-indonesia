@@ -61,11 +61,11 @@ public class StudentWebController {
         }
         if (kota != null) {
             mm.addAttribute(kota);
-            mm.addAttribute(kecamatanRepository.findByKota(kota));
+            mm.addAttribute(kecamatanRepository.findByKota(kota.getId()));
         }
         if (kecamatan != null) {
             mm.addAttribute(kecamatan);
-            mm.addAttribute(kelurahanRepository.findByKecamatan(kecamatan));
+            mm.addAttribute(kelurahanRepository.findByKecamatan(kecamatan.getId()));
         }
         if (kelurahan != null) {
             mm.addAttribute(kelurahan);
