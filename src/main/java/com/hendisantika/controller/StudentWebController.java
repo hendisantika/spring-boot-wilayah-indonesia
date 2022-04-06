@@ -61,17 +61,32 @@ public class StudentWebController {
         }
         if (kota != null) {
             mm.addAttribute(kota);
-            mm.addAttribute(kecamatanRepository.findByKota(kota.getId()));
+            mm.addAttribute(kecamatanRepository.findByKota(kota));
         }
         if (kecamatan != null) {
             mm.addAttribute(kecamatan);
-            mm.addAttribute(kelurahanRepository.findByKecamatan(kecamatan.getId()));
+            mm.addAttribute(kelurahanRepository.findByKecamatan(kecamatan));
         }
         if (kelurahan != null) {
             mm.addAttribute(kelurahan);
         }
         return mm;
     }
+
+    @PostMapping("/info/form")
+    public String process() {
+        return "redirect:info/view";
+    }
+
+    @GetMapping("/info/view")
+    public void info() {
+    }
+
+    @GetMapping("/form")
+    public String form() {
+        return "form";
+    }
+
 
     @GetMapping("/")
     public String index(Model model) {

@@ -83,7 +83,7 @@
                             <option th:each="p : ${provinsiList}"
                                     th:selected="${provinsi != null && (p.id == provinsi.id)}"
                                     th:text="${p.nama}"
-                                    th:value="@{/info/form(provinsi=${p.id})}">Open this select menu
+                                    th:value="@{/info/form#pilihKelurahan(provinsi=${p.id})}">Open this select menu
                             </option>
                         </select>
                     </div>
@@ -100,13 +100,15 @@
                                     th:if="${kotaList}"
                                     th:selected="${kota != null && (k.id == kota.id)}"
                                     th:text="${k.nama}"
-                                    th:value="@{/info/form(provinsi=${p.id}, kota=${k.id})}">Open this select menu
+                                    th:value="@{/info/form#pilihKelurahan(provinsi=${provinsi.id}, kota=${k.id})}">Open
+                                this select menu
                             </option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group">
+                    <a id="pilihKelurahan"></a>
                     <label class="col-sm-2 control-label">Kecamatan:</label>
                     <div class="col-sm-10">
                         <select aria-label="Default select example" class="form-select"
@@ -117,7 +119,8 @@
                                     th:if="${kecamatanList}"
                                     th:selected="${kecamatan != null && (kec.id == kecamatan.id)}"
                                     th:text="${kec.nama}"
-                                    th:value="@{/info/form(provinsi=${p.id}, kota=${k.id}, kec=${kec.id})}">Open this
+                                    th:value="@{/info/form#pilihKelurahan(provinsi=${p.id}, kota=${k.id}, kec=${kec.id})}">
+                                Open this
                                 select menu
                             </option>
                         </select>

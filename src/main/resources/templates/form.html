@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title> Info Form</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"> Info Form</h1>
+    </div>
+
+    <div class="col-md-8 order-md-1">
+        <form class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label>Nama</label>
+                <input class="form-control" placeholder="Nama" required type="text">
+            </div>
+            <div class="mb-3">
+                <label>Email</label>
+                <input class="form-control" placeholder="Email" required type="email">
+            </div>
+            <div class="mb-3">
+                <label>No. Telp</label>
+                <input class="form-control" placeholder="No. Telp" required type="text">
+            </div>
+            <div class="mb-3">
+                <label>Call Back Url</label>
+                <input class="form-control" placeholder="Call Back Url" required type="text">
+            </div>
+            <div class="mb-3">
+                <label>Logo</label>
+                <input class="form-control" required type="file">
+            </div>
+            <div class="mb-3">
+                <label>Alamat</label>
+                <input class="form-control" placeholder="Alamat lengkap" type="text">
+            </div>
+            <div class="mb-3">
+                <label>Provinsi</label>
+                <select aria-label="Default select example" class="form-select"
+                        onchange="if (this.value) window.location.href=this.value">
+                    <option>Pilih provinsi</option>
+                    <option th:each="p : ${provinsiList}"
+                            th:selected="${provinsi != null && (p.id == provinsi.id)}"
+                            th:text="${p.nama}"
+                            th:value="@{/info/form#pilihKelurahan(provinsi=${p.id})}">Open this select menu
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Kotamadya / Kabupaten</label>
+                <select aria-label="Default select example" class="form-select"
+                        onchange="if (this.value) window.location.href=this.value"
+                        th:disabled="${provinsi == null}">
+                    <option>Pilih Kabupaten / Kotamadya</option>
+                    <option th:each="kk : ${kotaList}"
+                            th:if="${kotaList}"
+                            th:selected="${kota != null && (kk.id == kota.id)}"
+                            th:text="${kk.nama}"
+                            th:value="@{/info/form#pilihKelurahan(provinsi=${provinsi.id},kota=${kk.id})}">
+                        Open this select menu
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Kecamatan</label>
+                <select aria-label="Default select example" class="form-select"
+                        onchange="if (this.value) window.location.href=this.value"
+                        th:disabled="${kota == null}">
+                    <option>Pilih Kecamatan</option>
+                    <option th:each="kec : ${kecamatanList}"
+                            th:if="${kecamatanList}"
+                            th:selected="${kecamatan != null && (kec.id == kecamatan.id)}"
+                            th:text="${kec.nama}"
+                            th:value="@{/info/form#pilihKelurahan(provinsi=${provinsi.id},kota=${kota.id},kecamatan=${kec.id})}">
+                        Open this select menu
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <a id="pilihKelurahan"></a>
+                <label>Kelurahan</label>
+                <select aria-label="Default select example" class="form-select" th:disabled="${kecamatan == null}">
+                    <option>Pilih Kelurahan</option>
+                    <option th:each="kel : ${kelurahanList}"
+                            th:if="${kelurahanList}"
+                            th:selected="${kelurahan != null && (kel.id == kelurahan.id)}"
+                            th:text="${kel.nama}"
+                            th:value="${kel.id}">
+                        Open this select menu
+                    </option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Ktp</label>
+                    <input class="form-control" required type="file">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>NPWP</label>
+                    <input class="form-control" required type="file">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>NIK</label>
+                <input class="form-control" placeholder="Nomor Induk Kependudukan" type="text">
+            </div>
+            <div class="mb-3">
+                <label>NPWP</label>
+                <input class="form-control" placeholder="Nomor Pokok Wajib Pajak" type="text">
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">Save</button>
+        </form>
+    </div>
+</section>
+</body>
+</html>

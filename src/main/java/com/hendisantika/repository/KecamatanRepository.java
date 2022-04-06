@@ -1,6 +1,7 @@
 package com.hendisantika.repository;
 
 import com.hendisantika.entity.Kecamatan;
+import com.hendisantika.entity.Kota;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Time: 07.14
  */
 public interface KecamatanRepository extends JpaRepository<Kecamatan, String> {
-    Kecamatan findByKota(String idKota);
+    Iterable<Kecamatan> findByKota(Kota kota);
 }
