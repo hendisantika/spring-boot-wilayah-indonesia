@@ -22,7 +22,7 @@ public class Kecamatan {
     private String id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_kota")
-    private Kota idKota;
+    private Kota kota;
 
     @Column(name = "kode", nullable = false, length = 50)
     private String kode;
@@ -30,7 +30,7 @@ public class Kecamatan {
     @Column(name = "nama", nullable = false)
     private String nama;
 
-    @OneToMany(mappedBy = "idKecamatan")
+    @OneToMany(mappedBy = "kecamatan")
     private Set<Kelurahan> kelurahans = new LinkedHashSet<>();
 
 }

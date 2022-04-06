@@ -23,7 +23,7 @@ public class Kota {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_provinsi", nullable = false)
-    private Provinsi idProvinsi;
+    private Provinsi provinsi;
 
     @Column(name = "kode", nullable = false, length = 50)
     private String kode;
@@ -31,6 +31,6 @@ public class Kota {
     @Column(name = "nama", nullable = false)
     private String nama;
 
-    @OneToMany(mappedBy = "idKota")
+    @OneToMany(mappedBy = "kota")
     private Set<Kecamatan> kecamatans = new LinkedHashSet<>();
 }

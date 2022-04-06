@@ -19,7 +19,7 @@ public class Kelurahan {
     private String id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_kecamatan")
-    private Kecamatan idKecamatan;
+    private Kecamatan kecamatan;
 
     @Column(name = "kode", nullable = false, length = 50)
     private String kode;
