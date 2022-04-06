@@ -1,0 +1,87 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Spring Boot CRUD Example</title>
+
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no"
+          name="viewport">
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="icon" th:href="@{/img/ubuntu.png}">
+
+    <script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+    <script th:src="@{/js/jquery-3.3.1.slim.min.js}" type="text/javascript"></script>
+    <script th:src="@{/js/popper.min.js}" type="text/javascript"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Form Student</h2>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <form class="form-horizontal" method="post"
+                  th:action="@{/create}" th:object="${student}">
+                <input th:field="*{id}" type="hidden"/>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Nama Depan:</label>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="firstName" placeholder="Nama Depan" required
+                               th:field="*{firstName}" type="text">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Nama Belakang:</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="lastName" placeholder="Nama Belakang" required
+                               th:field="*{lastName}" type="text">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Tanggal Lahir:</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="birthDate" required th:field="*{birthDate}" type="date">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Email:</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="email" placeholder="Email" required th:field="*{email}"
+                               type="text">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Phone:</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="phone" placeholder="Nomor telepon" required
+                               th:field="*{phone}" type="text">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Jurusan:</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="jurusan" placeholder="Nomor Jurusan" required
+                               th:field="*{jurusan}" type="text">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input class="btn btn-success" type="submit" value="Save">
+                    <a class="btn btn-danger" role="button" th:href="@{/}">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
