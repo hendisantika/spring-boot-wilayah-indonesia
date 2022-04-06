@@ -1,16 +1,24 @@
 package com.hendisantika.controller;
 
+import com.hendisantika.entity.Kecamatan;
+import com.hendisantika.entity.Kelurahan;
+import com.hendisantika.entity.Kota;
 import com.hendisantika.entity.Provinsi;
 import com.hendisantika.entity.Student;
+import com.hendisantika.repository.KecamatanRepository;
+import com.hendisantika.repository.KelurahanRepository;
+import com.hendisantika.repository.KotaRepository;
 import com.hendisantika.repository.ProvinsiRepository;
 import com.hendisantika.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,9 +36,41 @@ public class StudentWebController {
 
     private ProvinsiRepository provinsiRepository;
 
+    private KotaRepository kotaRepository;
+
+    private KecamatanRepository kecamatanRepository;
+
+    private KelurahanRepository kelurahanRepository;
+
     @ModelAttribute("provinsiList")
     public Iterable<Provinsi> provinsiList() {
         return provinsiRepository.findAll();
+    }
+
+    @GetMapping("/info/form")
+    public ModelMap displayInfoForm(
+            @RequestParam(value = "provinsi", required = false) Provinsi provinsi,
+            @RequestParam(value = "kota", required = false) Kota kota,
+            @RequestParam(value = "kecamatan", required = false) Kecamatan kecamatan,
+            @RequestParam(value = "kelurahan", required = false) Kelurahan kelurahan) {
+
+        ModelMap mm = new ModelMap();
+        if (provinsi != null) {
+            mm.addAttribute(provinsi);
+            mm.addAttribute(kotaRepository.findByProvinsi(provinsi));
+        }
+        if (kota != null) {
+            mm.addAttribute(kota);
+            mm.addAttribute(kecamatanRepository.findByKota(kota));
+        }
+        if (kecamatan != null) {
+            mm.addAttribute(kecamatan);
+            mm.addAttribute(kelurahanRepository.findByKecamatan(kecamatan));
+        }
+        if (kelurahan != null) {
+            mm.addAttribute(kelurahan);
+        }
+        return mm;
     }
 
     @GetMapping("/")
