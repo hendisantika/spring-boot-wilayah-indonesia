@@ -1,11 +1,14 @@
 package com.hendisantika.controller;
 
+import com.hendisantika.entity.Provinsi;
 import com.hendisantika.entity.Student;
+import com.hendisantika.repository.ProvinsiRepository;
 import com.hendisantika.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -22,6 +25,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class StudentWebController {
     private StudentService studentService;
+
+    private ProvinsiRepository provinsiRepository;
+
+    @ModelAttribute("provinsiList")
+    public Iterable<Provinsi> provinsiList() {
+        return provinsiRepository.findAll();
+    }
 
     @GetMapping("/")
     public String index(Model model) {
