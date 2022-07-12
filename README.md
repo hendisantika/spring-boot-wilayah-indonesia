@@ -8,3 +8,9 @@
 4. Run app with spring boot: `mvn clean spring-boot:run`
 5. Run with docker compose: `mvn clean package && docker compose up`
 6. Open your favorite browser: http://localhost:8080 or using docker: http://localhost:8000
+
+### Image Screen shot
+
+Index Page
+
+![Index Page](img/index.png "Index Page")
