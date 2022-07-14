@@ -47,18 +47,19 @@ public class StudentWebController {
         return provinsiRepository.findAll();
     }
 
-    @GetMapping("/info/form")
-    public ModelMap displayInfoForm(
-            @RequestParam(value = "provinsi", required = false) Provinsi provinsi,
-            @RequestParam(value = "kota", required = false) Kota kota,
-            @RequestParam(value = "kecamatan", required = false) Kecamatan kecamatan,
-            @RequestParam(value = "kelurahan", required = false) Kelurahan kelurahan) {
+    @GetMapping("/create")
+    public ModelMap displayInfoForm(Model model,
+                                    @RequestParam(value = "provinsi", required = false) Provinsi provinsi,
+                                    @RequestParam(value = "kota", required = false) Kota kota,
+                                    @RequestParam(value = "kecamatan", required = false) Kecamatan kecamatan,
+                                    @RequestParam(value = "kelurahan", required = false) Kelurahan kelurahan) {
 
         ModelMap mm = new ModelMap();
         if (provinsi != null) {
             mm.addAttribute(provinsi);
             mm.addAttribute(kotaRepository.findByProvinsi(provinsi));
         }
+        System.out.println("provinsi = " + provinsi);
         if (kota != null) {
             mm.addAttribute(kota);
             mm.addAttribute(kecamatanRepository.findByKota(kota));
@@ -70,6 +71,7 @@ public class StudentWebController {
         if (kelurahan != null) {
             mm.addAttribute(kelurahan);
         }
+        model.addAttribute("student", new Student());
         return mm;
     }
 
@@ -80,6 +82,7 @@ public class StudentWebController {
 
     @GetMapping("/info/view")
     public void info() {
+
     }
 
     @GetMapping("/form")
@@ -94,7 +97,7 @@ public class StudentWebController {
         return "index";
     }
 
-    @GetMapping(value = "/create")
+    @GetMapping(value = "/create2")
     public String create1(Model model) {
         model.addAttribute("student", new Student());
         return "formStudent";
