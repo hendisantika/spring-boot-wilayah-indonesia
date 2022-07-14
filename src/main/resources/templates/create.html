@@ -83,7 +83,7 @@
                             <option th:each="p : ${provinsiList}"
                                     th:selected="${provinsi != null && (p.id == provinsi.id)}"
                                     th:text="${p.nama}"
-                                    th:value="@{/create#pilihKelurahan(provinsi=${p.id})}">Open this select menu
+                                    th:value="@{/create#pilih(provinsi=${p.id})}">Open this select menu
                             </option>
                         </select>
                     </div>
@@ -96,11 +96,11 @@
                                 onchange="if(this.value) window.location.href=this.value"
                                 th:disabled="${provinsi == null}">
                             <option>Pilih Kotamadya/Kabupaten</option>
-                            <option th:each="k : ${kotaList}"
+                            <option th:each="kk : ${kotaList}"
                                     th:if="${kotaList}"
-                                    th:selected="${kota != null && (k.id == kota.id)}"
-                                    th:text="${k.nama}"
-                                    th:value="@{/create#pilihKelurahan(provinsi=${provinsi.id}, kota=${k.id})}">Open
+                                    th:selected="${kota != null && (kk.id == kota.id)}"
+                                    th:text="${kk.nama}"
+                                    th:value="@{/create#pilih(provinsi=${provinsi.id}, kota=${kk.id})}">Open
                                 this select menu
                             </option>
                         </select>
@@ -119,9 +119,8 @@
                                     th:if="${kecamatanList}"
                                     th:selected="${kecamatan != null && (kec.id == kecamatan.id)}"
                                     th:text="${kec.nama}"
-                                    th:value="@{/create#pilihKelurahan(provinsi=${p.id}, kota=${k.id}, kec=${kec.id})}">
-                                Open this
-                                select menu
+                                    th:value="@{/create#pilih(provinsi=${provinsi.id},kota=${kota.id},kecamatan=${kec.id})}">
+                                Open this select menu
                             </option>
                         </select>
                     </div>
@@ -131,14 +130,14 @@
                     <label class="col-sm-2 control-label">Kelurahan:</label>
                     <div class="col-sm-10">
                         <select aria-label="Default select example" class="form-select"
-                                onchange="if(this.value) window.location.href=this.value"
-                                th:disabled="${kelurahan == null}">
+                                th:disabled="${kecamatan == null}">
                             <option>Pilih Kelurahan</option>
                             <option th:each="kel : ${kelurahanList}"
                                     th:if="${kelurahanList}"
                                     th:selected="${kelurahan != null && (kel.id == kelurahan.id)}"
                                     th:text="${kel.nama}"
-                                    th:value="${kel.id}">Open this select menu
+                                    th:value="${kel.id}">
+                                Open this select menu
                             </option>
                         </select>
                     </div>
