@@ -1,8 +1,12 @@
 package com.hendisantika.controller;
 
+import com.hendisantika.entity.Provinsi;
 import com.hendisantika.repository.ProvinsiRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,4 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RegionController {
     private final ProvinsiRepository provinsiRepository;
+
+    @GetMapping("/provinsi")
+    public List<Provinsi> getProvinces() {
+        return provinsiRepository.findAll();
+    }
 }
