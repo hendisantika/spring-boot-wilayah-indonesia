@@ -59,27 +59,9 @@ public class Student {
     @Column(nullable = false, unique = true)
     private String jurusan;
 
-    @OneToOne(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JoinColumn(name = "provinsi_id", referencedColumnName = "id")
-    private Provinsi provinsi;
-
-    @OneToOne(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JoinColumn(name = "kota_id", referencedColumnName = "id")
-    private Kota kota;
-
-    @OneToOne(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JoinColumn(name = "kecamatan_id", referencedColumnName = "id")
-    private Kecamatan kecamatan;
-
-    @OneToOne(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+    @ManyToOne(
+            fetch = FetchType.LAZY
+    )
     @JoinColumn(name = "kelurahan_id", referencedColumnName = "id")
     private Kelurahan kelurahan;
 

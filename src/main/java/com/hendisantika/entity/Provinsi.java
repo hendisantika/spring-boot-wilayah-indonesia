@@ -1,6 +1,9 @@
 package com.hendisantika.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
@@ -16,7 +19,4 @@ public class Provinsi {
 
     @Column(name = "nama", nullable = false)
     private String nama;
-
-    @OneToOne(mappedBy = "provinsi")
-    private Student user;
 }

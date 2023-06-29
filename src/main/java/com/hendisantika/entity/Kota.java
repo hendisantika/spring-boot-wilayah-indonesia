@@ -1,10 +1,11 @@
 package com.hendisantika.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "kota")
@@ -14,8 +15,15 @@ public class Kota {
     @Column(name = "id", nullable = false, length = 36)
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_provinsi", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "id_provinsi",
+            referencedColumnName = "kode",
+            foreignKey = @ForeignKey(name = "provinsi_kd_fk"),
+            nullable = false)
+    @JsonDeserialize(as = Provinsi.class)
+    @JsonSerialize(as = Provinsi.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     private Provinsi provinsi;
 
     @Column(name = "kode", nullable = false, length = 50)
@@ -23,10 +31,4 @@ public class Kota {
 
     @Column(name = "nama", nullable = false)
     private String nama;
-
-    @OneToMany(mappedBy = "kota")
-    private Set<Kecamatan> kecamatans = new LinkedHashSet<>();
-
-    @OneToOne(mappedBy = "kota")
-    private Student user;
 }
