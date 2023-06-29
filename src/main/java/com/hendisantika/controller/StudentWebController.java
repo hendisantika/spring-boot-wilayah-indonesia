@@ -1,10 +1,6 @@
 package com.hendisantika.controller;
 
-import com.hendisantika.entity.Kecamatan;
-import com.hendisantika.entity.Kelurahan;
-import com.hendisantika.entity.Kota;
-import com.hendisantika.entity.Provinsi;
-import com.hendisantika.entity.Student;
+import com.hendisantika.entity.*;
 import com.hendisantika.repository.KecamatanRepository;
 import com.hendisantika.repository.KelurahanRepository;
 import com.hendisantika.repository.KotaRepository;
@@ -14,11 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -119,5 +111,13 @@ public class StudentWebController {
     public String hapusStudent(@PathVariable Long id) {
         studentService.deleteById(id);
         return "redirect:/";
+    }
+
+    @GetMapping("/add")
+    public ModelMap displayStudentForm(Model model) {
+        ModelMap mm = new ModelMap();
+        model.addAttribute("provinsiList", provinsiList());
+        model.addAttribute("student", new Student());
+        return mm;
     }
 }

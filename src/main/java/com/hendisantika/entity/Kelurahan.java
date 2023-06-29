@@ -1,14 +1,7 @@
 package com.hendisantika.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "kelurahan")
@@ -27,4 +20,7 @@ public class Kelurahan {
     @Column(name = "nama", nullable = false)
     private String nama;
 
+    @OneToOne(mappedBy = "kelurahan")
+    private Student user;
 }
+

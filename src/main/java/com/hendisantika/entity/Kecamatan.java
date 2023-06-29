@@ -1,15 +1,8 @@
 package com.hendisantika.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -32,5 +25,8 @@ public class Kecamatan {
 
     @OneToMany(mappedBy = "kecamatan")
     private Set<Kelurahan> kelurahans = new LinkedHashSet<>();
+
+    @OneToOne(mappedBy = "kecamatan")
+    private Student user;
 
 }

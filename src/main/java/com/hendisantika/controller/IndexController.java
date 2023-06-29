@@ -20,7 +20,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class IndexController {
-    private ProvinsiRepository provinsiRepository;
+    private final ProvinsiRepository provinsiRepository;
 
     public String index(Model model) {
         List<Provinsi> provinsiList = provinsiRepository.findAll();

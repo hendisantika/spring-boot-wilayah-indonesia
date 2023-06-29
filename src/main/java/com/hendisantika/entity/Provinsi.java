@@ -1,11 +1,7 @@
 package com.hendisantika.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "provinsi")
@@ -20,4 +16,7 @@ public class Provinsi {
 
     @Column(name = "nama", nullable = false)
     private String nama;
+
+    @OneToOne(mappedBy = "provinsi")
+    private Student user;
 }
