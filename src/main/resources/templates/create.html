@@ -92,12 +92,13 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Provinsi:</label>
                     <div class="col-sm-10">
-                        <select aria-label="Default select example" class="form-select" th:field="*{provinsi}"
-                        <option>Pilih Provinsi</option>
-                        <option th:each="p : ${provinsiList}"
-                                th:selected="${provinsi != null && (p.id == provinsi.id)}"
-                                th:text="${p.nama}">
-                        </option>
+                        <select aria-label="Default select example" class="form-select" id="provinsi"
+                                th:field="*{provinsi}">
+                            <option>Pilih Provinsi</option>
+                            <option th:each="p : ${provinsiList}"
+                                    th:selected="${provinsi != null && (p.id == provinsi.id)}"
+                                    th:text="${p.nama}">
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -105,17 +106,8 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Kotamadya/Kabupaten:</label>
                     <div class="col-sm-10">
-                        <select aria-label="Default select example" class="form-select"
-                                onchange="if(this.value) window.location.href=this.value"
-                                th:disabled="${provinsi == null}">
-                            <option>Pilih Kotamadya/Kabupaten</option>
-                            <option th:each="kk : ${kotaList}"
-                                    th:if="${kotaList}"
-                                    th:selected="${kota != null && (kk.id == kota.id)}"
-                                    th:text="${kk.nama}"
-                                    th:value="@{/create#pilih(provinsi=${provinsi.id}, kota=${kk.id})}">Open
-                                this select menu
-                            </option>
+                        <select class="form-control" id="kota">
+                            <option value='-1'>SELECT</option>
                         </select>
                     </div>
                 </div>
@@ -124,7 +116,7 @@
                     <a id="pilihKelurahan"></a>
                     <label class="col-sm-2 control-label">Kecamatan:</label>
                     <div class="col-sm-10">
-                        <select aria-label="Default select example" class="form-select"
+                        <select aria-label="Default select example" class="form-select" id="kecamatan"
                                 onchange="if(this.value) window.location.href=this.value"
                                 th:disabled="${kota == null}">
                             <option>Pilih Kecamatan</option>
