@@ -1,9 +1,11 @@
 package com.hendisantika.controller;
 
 import com.hendisantika.entity.Kecamatan;
+import com.hendisantika.entity.Kelurahan;
 import com.hendisantika.entity.Kota;
 import com.hendisantika.entity.Provinsi;
 import com.hendisantika.repository.KecamatanRepository;
+import com.hendisantika.repository.KelurahanRepository;
 import com.hendisantika.repository.KotaRepository;
 import com.hendisantika.repository.ProvinsiRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class RegionController {
     private final ProvinsiRepository provinsiRepository;
     private final KotaRepository kotaRepository;
     private final KecamatanRepository kecamatanRepository;
+    private final KelurahanRepository kelurahanRepository;
 
     @GetMapping("/provinsi")
     public List<Provinsi> getProvinces() {
@@ -43,5 +46,10 @@ public class RegionController {
     @GetMapping("/kecamatan")
     public List<Kecamatan> getDistricts(@RequestParam("kota") String kota) {
         return kecamatanRepository.findByKota(kota);
+    }
+
+    @GetMapping("/kelurahan")
+    public List<Kelurahan> getVillages(@RequestParam("kecamatan") String kecamatan) {
+        return kelurahanRepository.findByKecamatan(kecamatan);
     }
 }
