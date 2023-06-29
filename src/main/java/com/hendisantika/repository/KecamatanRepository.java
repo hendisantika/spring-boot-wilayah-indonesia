@@ -3,6 +3,9 @@ package com.hendisantika.repository;
 import com.hendisantika.entity.Kecamatan;
 import com.hendisantika.entity.Kota;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,4 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface KecamatanRepository extends JpaRepository<Kecamatan, String> {
     Iterable<Kecamatan> findByKota(Kota kota);
+
+    @Query(nativeQuery = true, value = "SELECT * from kecamatan where id_kota=?1")
+    List<Kecamatan> findByKota(String kota);
 }
