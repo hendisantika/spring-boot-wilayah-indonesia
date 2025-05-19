@@ -83,7 +83,7 @@
                             <option th:each="p : ${provinsiList}"
                                     th:selected="${provinsi != null && (p.id == provinsi.id)}"
                                     th:text="${p.nama}"
-                                    th:value="@{/create#pilihKelurahan(provinsi=${p.id})}">Open this select menu
+                                    th:value="@{/create(provinsi=${p.id})}">Open this select menu
                             </option>
                         </select>
                     </div>
@@ -100,7 +100,7 @@
                                     th:if="${kotaList}"
                                     th:selected="${kota != null && (k.id == kota.id)}"
                                     th:text="${k.nama}"
-                                    th:value="@{/create#pilihKelurahan(provinsi=${provinsi.id}, kota=${k.id})}">Open
+                                    th:value="@{/create(provinsi=${provinsi.id}, kota=${k.id})}">Open
                                 this select menu
                             </option>
                         </select>
@@ -119,7 +119,7 @@
                                     th:if="${kecamatanList}"
                                     th:selected="${kecamatan != null && (kec.id == kecamatan.id)}"
                                     th:text="${kec.nama}"
-                                    th:value="@{/create#pilihKelurahan(provinsi=${provinsi.id}, kota=${kota.id}, kecamatan=${kec.id})}">
+                                    th:value="@{/create(provinsi=${provinsi.id}, kota=${kota.id}, kecamatan=${kec.id})}">
                                 Open this
                                 select menu
                             </option>
