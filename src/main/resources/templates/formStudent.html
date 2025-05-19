@@ -119,7 +119,7 @@
                                     th:if="${kecamatanList}"
                                     th:selected="${kecamatan != null && (kec.id == kecamatan.id)}"
                                     th:text="${kec.nama}"
-                                    th:value="@{/create#pilihKelurahan(provinsi=${p.id}, kota=${k.id}, kec=${kec.id})}">
+                                    th:value="@{/create#pilihKelurahan(provinsi=${provinsi.id}, kota=${kota.id}, kecamatan=${kec.id})}">
                                 Open this
                                 select menu
                             </option>
