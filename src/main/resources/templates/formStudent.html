@@ -131,12 +131,11 @@
                     <label class="col-sm-2 control-label">Kelurahan:</label>
                     <div class="col-sm-10">
                         <select aria-label="Default select example" class="form-select"
-                                onchange="if(this.value) window.location.href=this.value"
-                                th:disabled="${kelurahan == null}">
-                            <option>Pilih Kelurahan</option>
+                                th:disabled="${kecamatan == null}"
+                                th:field="*{kelurahan}">
+                            <option value="">Pilih Kelurahan</option>
                             <option th:each="kel : ${kelurahanList}"
                                     th:if="${kelurahanList}"
-                                    th:selected="${kelurahan != null && (kel.id == kelurahan.id)}"
                                     th:text="${kel.nama}"
                                     th:value="${kel.id}">Open this select menu
                             </option>
