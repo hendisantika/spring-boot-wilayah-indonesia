@@ -14,3 +14,11 @@
 Index Page
 
 ![Index Page](img/index.png "Index Page")
+
+Add New Student
+
+![Add New Student](img/add.png "Add New Student")
+
+List Student
+
+![List Student](img/list.png "List Student")
