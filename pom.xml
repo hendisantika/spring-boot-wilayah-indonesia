@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-            <version>11.17.0</version>
+            <version>11.17.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
