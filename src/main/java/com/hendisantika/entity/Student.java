@@ -51,7 +51,7 @@ public class Student {
 
     @NotEmpty(message = "Phone number is required")
     @NotNull(message = "Phone can not be null!!")
-    @Size(max = 13, min = 10, message = "Mobile number should be of 10 digits")
+    @Size(min = 10, max = 15, message = "Mobile number should be between 10 and 15 digits")
     @Column(nullable = false, unique = true)
     private String phone;
 

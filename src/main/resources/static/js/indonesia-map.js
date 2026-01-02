@@ -284,6 +284,15 @@ function loadProvinceBoundary(provinsiId, provinsiNama) {
 
                 // Add province boundary to map
                 currentGeoJsonLayer = L.geoJSON(feature, {
+                    // Only show polygons, no points/markers
+                    pointToLayer: function(feature, latlng) {
+                        return null; // Don't create markers for point features
+                    },
+                    filter: function(feature) {
+                        // Only show Polygon and MultiPolygon geometries
+                        return feature.geometry.type === 'Polygon' ||
+                               feature.geometry.type === 'MultiPolygon';
+                    },
                     style: {
                         fillColor: COLORS.provinsi,
                         weight: 3,
@@ -615,6 +624,15 @@ function displayBoundaries(geojson, level) {
 
     // Create GeoJSON layer with styling and interactivity
     currentGeoJsonLayer = L.geoJSON(geojson, {
+        // Only show polygons, no points/markers
+        pointToLayer: function(feature, latlng) {
+            return null; // Don't create markers for point features
+        },
+        filter: function(feature) {
+            // Only show Polygon and MultiPolygon geometries
+            return feature.geometry.type === 'Polygon' ||
+                   feature.geometry.type === 'MultiPolygon';
+        },
         style: function(feature) {
             return {
                 fillColor: COLORS[level],
@@ -791,6 +809,15 @@ function zoomToSelection() {
 
                 // Add single feature
                 currentGeoJsonLayer = L.geoJSON(feature, {
+                    // Only show polygons, no points/markers
+                    pointToLayer: function(feature, latlng) {
+                        return null; // Don't create markers for point features
+                    },
+                    filter: function(feature) {
+                        // Only show Polygon and MultiPolygon geometries
+                        return feature.geometry.type === 'Polygon' ||
+                               feature.geometry.type === 'MultiPolygon';
+                    },
                     style: {
                         fillColor: COLORS[level],
                         weight: 3,

@@ -254,6 +254,10 @@ Access at: http://localhost:8000
 
 ![List Student](img/list.png "List Student")
 
+**Indonesia Map**
+
+![Indonesia Map](img/map.png "Indonesia Map")
+
 ### Interactive Map Features
 
 **Map Visualization**
