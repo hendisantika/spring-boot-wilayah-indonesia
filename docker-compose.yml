@@ -16,7 +16,7 @@ services:
   #      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
   db:
-    image: 'postgres:17.5-alpine3.21'
+    image: 'postgis/postgis:16-3.4'
     container_name: db
     environment:
       - POSTGRES_DB=wilayah_indonesia
