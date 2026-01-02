@@ -134,6 +134,14 @@ function setupEventListeners() {
         if (provinsiId) {
             loadKotaFilter(provinsiId);
             document.getElementById('btnZoomToSelection').disabled = false;
+
+            // Auto-load province boundary if not triggered by search
+            // (Search already calls loadProvinceBoundary, so avoid double loading)
+            const searchInput = document.getElementById('searchProvinsi');
+            const selectedProvinsi = provinsiData.find(p => p.id == provinsiId);
+            if (selectedProvinsi && searchInput.value !== selectedProvinsi.nama) {
+                loadProvinceBoundary(provinsiId, selectedProvinsi.nama);
+            }
         } else {
             resetKotaFilter();
             document.getElementById('btnZoomToSelection').disabled = true;
@@ -244,6 +252,95 @@ function selectProvinsiFromDropdown(id, nama) {
     const searchResults = document.getElementById('searchResults');
     searchResults.textContent = `Terpilih: ${nama}`;
     searchResults.className = 'form-text text-success';
+
+    // Automatically load and display the province boundary on the map
+    loadProvinceBoundary(id, nama);
+}
+
+/**
+ * Load and display province boundary on the map automatically
+ */
+function loadProvinceBoundary(provinsiId, provinsiNama) {
+    // Show loading indicator
+    showLoading();
+
+    // Fetch province boundary from API
+    fetch(`/api/map/provinsi`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(geojson => {
+            // Find the feature with matching ID
+            const feature = geojson.features.find(f => f.properties.id == provinsiId);
+
+            if (feature) {
+                // Remove existing layer
+                if (currentGeoJsonLayer) {
+                    map.removeLayer(currentGeoJsonLayer);
+                }
+
+                // Add province boundary to map
+                currentGeoJsonLayer = L.geoJSON(feature, {
+                    style: {
+                        fillColor: COLORS.provinsi,
+                        weight: 3,
+                        opacity: 1,
+                        color: '#0066cc',
+                        dashArray: '3',
+                        fillOpacity: 0.5
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const props = feature.properties;
+                        let popupContent = `
+                            <div class="boundary-popup">
+                                <h6>${props.nama}</h6>
+                                <table class="table table-sm">
+                                    <tr><td><strong>Kode:</strong></td><td>${props.kode}</td></tr>
+                                    <tr><td><strong>Tingkat:</strong></td><td>${props.level}</td></tr>
+                                </table>
+                            </div>
+                        `;
+                        layer.bindPopup(popupContent);
+
+                        // Add hover effects
+                        layer.on({
+                            mouseover: function(e) {
+                                const layer = e.target;
+                                layer.setStyle({
+                                    weight: 4,
+                                    color: '#003d7a',
+                                    fillOpacity: 0.7
+                                });
+                                layer.bringToFront();
+                            },
+                            mouseout: function(e) {
+                                currentGeoJsonLayer.resetStyle(e.target);
+                            }
+                        });
+                    }
+                }).addTo(map);
+
+                // Zoom to province boundary
+                map.fitBounds(currentGeoJsonLayer.getBounds());
+
+                // Update info panel
+                updateInfoPanel(feature.properties);
+
+                currentLayer = 'provinsi';
+            } else {
+                showError(`Batas wilayah untuk ${provinsiNama} tidak ditemukan`);
+            }
+
+            hideLoading();
+        })
+        .catch(error => {
+            console.error('Error loading province boundary:', error);
+            hideLoading();
+            showError(`Gagal memuat batas wilayah ${provinsiNama}. Pastikan data geometri tersedia di database.`);
+        });
 }
 
 /**
