@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Peta Wilayah Indonesia</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!-- Leaflet CSS -->
+    <link crossorigin="" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          rel="stylesheet"/>
+
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+            border: 2px solid #dee2e6;
+            border-radius: 0.25rem;
+        }
+
+        .map-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .info-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            min-height: 100px;
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .legend {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .legend-item {
+            margin: 5px 0;
+        }
+
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border: 1px solid #333;
+            vertical-align: middle;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 0.25rem 0.25rem;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .search-dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+        .search-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-dropdown-item:hover,
+        .search-dropdown-item.active {
+            background-color: #f8f9fa;
+        }
+
+        .search-dropdown-item.selected {
+            background-color: #e7f3ff;
+            font-weight: 500;
+        }
+
+        .search-dropdown-empty {
+            padding: 10px 15px;
+            color: #6c757d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2>Peta Wilayah Administrasi Indonesia</h2>
+                <p class="text-muted">Visualisasi batas wilayah Provinsi, Kabupaten/Kota, Kecamatan, dan Kelurahan</p>
+            </div>
+        </div>
+
+        <!-- Map Controls -->
+        <div class="row">
+            <div class="col-12">
+                <div class="map-controls">
+                    <!-- Search Box -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="searchProvinsi">Cari Provinsi:</label>
+                            <div style="position: relative;">
+                                <input autocomplete="off" class="form-control" id="searchProvinsi"
+                                       placeholder="Ketik nama provinsi untuk mencari..."
+                                       type="text">
+                                <div class="search-dropdown" id="searchDropdown" style="display: none;">
+                                    <!-- Autocomplete results will appear here -->
+                                </div>
+                            </div>
+                            <small class="form-text text-muted" id="searchResults"></small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="adminLevel">Tingkat Administrasi:</label>
+                            <select class="form-select" id="adminLevel">
+                                <option value="provinsi">Provinsi</option>
+                                <option value="kota">Kabupaten/Kota</option>
+                                <option value="kecamatan">Kecamatan</option>
+                                <option value="kelurahan">Kelurahan/Desa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Cascading Filters -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterProvinsi">Provinsi:</label>
+                            <select class="form-select" id="filterProvinsi">
+                                <option value="">Pilih Provinsi</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterKota">Kabupaten/Kota:</label>
+                            <select class="form-select" disabled id="filterKota">
+                                <option value="">Pilih Provinsi Terlebih Dahulu</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterKecamatan">Kecamatan:</label>
+                            <select class="form-select" disabled id="filterKecamatan">
+                                <option value="">Pilih Kota Terlebih Dahulu</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterKelurahan">Kelurahan/Desa:</label>
+                            <select class="form-select" disabled id="filterKelurahan">
+                                <option value="">Pilih Kecamatan Terlebih Dahulu</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button class="btn btn-primary" id="btnLoadBoundaries">Muat Batas Wilayah</button>
+                            <button class="btn btn-secondary" id="btnClearMap">Bersihkan Peta</button>
+                            <button class="btn btn-info" id="btnResetView">Reset View</button>
+                            <button class="btn btn-success" disabled id="btnZoomToSelection">Zoom ke Wilayah Terpilih</button>
+                            <span class="ms-3" id="loadingSpinner" style="display: none;">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                                Memuat data...
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="row">
+            <div class="col-12">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="row">
+            <div class="col-12">
+                <div class="info-panel">
+                    <h5>Informasi Wilayah</h5>
+                    <div id="infoContent">
+                        <p class="text-muted">Klik pada wilayah di peta untuk melihat informasi detail.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-5">
+            <div class="col-12">
+                <a class="btn btn-secondary" th:href="@{/}">Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script crossorigin=""
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- jQuery -->
+    <script th:src="@{/js/jquery-3.3.1.slim.min.js}"></script>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <!-- Custom Map JavaScript -->
+    <script th:src="@{/js/indonesia-map.js}"></script>
+</body>
+</html>
