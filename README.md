@@ -25,11 +25,14 @@ A Spring Boot application for managing Indonesian administrative regions (Provin
 - **Clear button** for quick reset
 - **Real-time filtering** as you type
 - **Click-to-select** from dropdown
+- **Auto-load boundary** - province boundary automatically displays on map when selected
 
 ### 🎯 Map Controls
 - **Multi-level boundary display** (Provinsi → Kota → Kecamatan → Kelurahan)
 - **Cascading filters** for precise area selection
+- **Auto-load on selection** - province boundaries automatically load and display when selected
 - **Zoom to selection** - automatically zoom to selected boundaries
+- **Clean polygon rendering** - displays only boundary polygons without markers or dots
 - **Interactive popups** with boundary information
 - **Hover effects** for boundary highlighting
 - **Reset view** to Indonesia center
@@ -162,17 +165,19 @@ GET /api/map/kelurahan?kecamatanId={id} # Village boundaries
    - Type province name in search box
    - Autocomplete dropdown shows matching results
    - Click to select or use keyboard (↑↓ Enter)
+   - **Province boundary automatically loads and displays on map**
+   - Map automatically zooms to fit the selected province
    - Clear button (X) to reset search
 
 2. **Cascading Filters**
-   - Select **Provinsi** → enables Kota dropdown
+   - Select **Provinsi** → enables Kota dropdown + **auto-loads boundary**
    - Select **Kota** → enables Kecamatan dropdown
    - Select **Kecamatan** → enables Kelurahan dropdown
 
 3. **Zoom to Selection**
    - Select any administrative level
    - Click "Zoom ke Wilayah Terpilih"
-   - Map highlights and zooms to selected boundary
+   - Map highlights and zooms to selected boundary (polygons only, no markers)
 
 ### Map Controls
 - **Administrative Level**: Choose which level to display (Provinsi/Kota/Kecamatan/Kelurahan)
@@ -185,6 +190,7 @@ GET /api/map/kelurahan?kecamatanId={id} # Village boundaries
 - **Hover** to highlight boundaries
 - **Popup** shows boundary name and code
 - **Info Panel** displays detailed information
+- **Clean rendering** - only polygon boundaries displayed (no markers or dots)
 
 ## Database Schema
 
