@@ -260,25 +260,51 @@ Access at: http://localhost:8000
 
 ![List Student](img/list.png "List Student")
 
-**Indonesia Map**
+### Interactive Map Visualization
 
-![Indonesia Map](img/map.png "Indonesia Map")
+**Main Map Interface**
+
+![Indonesia Map](img/map.png "Indonesia Map - Interactive Boundary Visualization")
+
+*The interactive map interface with OpenStreetMap base layer, Leaflet.js controls, province search with autocomplete dropdown, and cascading filter dropdowns for multi-level administrative boundary selection (Provinsi → Kota → Kecamatan → Kelurahan).*
+
+**Key Features Demonstrated:**
+- Search box with autocomplete for province lookup
+- Cascading dropdown filters for all administrative levels
+- Map controls (Load Boundaries, Clear Map, Reset View, Zoom to Selection)
+- Clean boundary polygon display on interactive map
+- Info panel for displaying selected area details
 
 ### Interactive Map Features
 
-**Map Visualization**
-- OpenStreetMap base layer
-- Multi-level boundary display
-- Interactive controls
+**🔍 Smart Province Search**
+- **Autocomplete dropdown** - Type to see matching provinces in real-time
+- **Keyboard navigation** - Use ↑↓ arrow keys, Enter to select, Esc to close
+- **Auto-load boundary** - Selected province boundary automatically displays on map
+- **Auto-zoom** - Map automatically zooms to fit the selected province
+- **Clear button** - Quick reset with X button
 
-**Province Search with Autocomplete**
-- Real-time filtering
-- Keyboard navigation
-- Click-to-select
+**🗺️ Map Visualization**
+- **OpenStreetMap base layer** - High-quality map tiles
+- **Multi-level boundary display** - View Provinsi, Kota, Kecamatan, or Kelurahan boundaries
+- **Clean polygon rendering** - Only boundary polygons displayed (no markers or dots)
+- **Interactive controls** - Zoom, pan, and layer controls
+- **Color-coded levels** - Each administrative level has distinct colors
 
-**Cascading Filters**
-- Provinsi → Kota → Kecamatan → Kelurahan
-- Auto-enabled dropdowns
+**📊 Cascading Filters**
+- **Provinsi** → Kota dropdown enables + **auto-loads province boundary**
+- **Kota** → Kecamatan dropdown enables
+- **Kecamatan** → Kelurahan dropdown enables
+- **Smart filtering** - Each level filters the next level automatically
+
+**🎯 Interactive Features**
+- **Click boundaries** - View detailed information in info panel
+- **Hover effects** - Boundaries highlight on mouse hover
+- **Popups** - Click to see boundary name, code, and hierarchy
+- **Zoom to selection** - Button to zoom to specific selected boundary
+- **Load boundaries** - Display all boundaries for selected administrative level
+- **Clear map** - Remove all boundaries to start fresh
+- **Reset view** - Return to Indonesia center view
 
 ## Database Migrations
 
