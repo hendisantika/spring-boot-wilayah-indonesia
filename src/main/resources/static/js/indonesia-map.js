@@ -122,7 +122,11 @@ function setupEventListeners() {
     // Province search box
     document.getElementById('searchProvinsi').addEventListener('input', function() {
         searchProvinsi(this.value);
+        toggleClearButton(this.value);
     });
+
+    // Clear search button
+    document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
 
     // Province filter change
     document.getElementById('filterProvinsi').addEventListener('change', function() {
@@ -233,6 +237,9 @@ function selectProvinsiFromDropdown(id, nama) {
     // Hide dropdown
     document.getElementById('searchDropdown').style.display = 'none';
 
+    // Show clear button since input now has text
+    document.getElementById('clearSearchBtn').style.display = 'flex';
+
     // Update results text
     const searchResults = document.getElementById('searchResults');
     searchResults.textContent = `Terpilih: ${nama}`;
@@ -245,10 +252,46 @@ function selectProvinsiFromDropdown(id, nama) {
 function closeSearchDropdown(event) {
     const searchInput = document.getElementById('searchProvinsi');
     const dropdown = document.getElementById('searchDropdown');
+    const clearBtn = document.getElementById('clearSearchBtn');
 
-    if (event.target !== searchInput && !dropdown.contains(event.target)) {
+    if (event.target !== searchInput && !dropdown.contains(event.target) && event.target !== clearBtn) {
         dropdown.style.display = 'none';
     }
+}
+
+/**
+ * Clear search input and reset dropdown
+ */
+function clearSearch() {
+    const searchInput = document.getElementById('searchProvinsi');
+    const dropdown = document.getElementById('searchDropdown');
+    const searchResults = document.getElementById('searchResults');
+    const clearBtn = document.getElementById('clearSearchBtn');
+
+    // Clear input
+    searchInput.value = '';
+
+    // Hide dropdown and results
+    dropdown.style.display = 'none';
+    dropdown.innerHTML = '';
+    searchResults.textContent = '';
+
+    // Hide clear button
+    clearBtn.style.display = 'none';
+
+    // Reset selected index
+    selectedIndex = -1;
+
+    // Focus back on input
+    searchInput.focus();
+}
+
+/**
+ * Toggle clear button visibility based on input value
+ */
+function toggleClearButton(value) {
+    const clearBtn = document.getElementById('clearSearchBtn');
+    clearBtn.style.display = value ? 'flex' : 'none';
 }
 
 /**

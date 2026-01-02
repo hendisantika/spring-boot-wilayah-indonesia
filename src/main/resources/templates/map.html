@@ -112,6 +112,41 @@
             color: #6c757d;
             text-align: center;
         }
+
+        .search-input-with-clear {
+            padding-right: 35px;
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .search-clear-btn:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .search-clear-btn:active {
+            background-color: #dee2e6;
+        }
+
+        .search-clear-btn svg {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -132,9 +167,14 @@
                         <div class="col-md-6">
                             <label class="form-label" for="searchProvinsi">Cari Provinsi:</label>
                             <div style="position: relative;">
-                                <input autocomplete="off" class="form-control" id="searchProvinsi"
+                                <input autocomplete="off" class="form-control search-input-with-clear" id="searchProvinsi"
                                        placeholder="Ketik nama provinsi untuk mencari..."
                                        type="text">
+                                <button class="search-clear-btn" id="clearSearchBtn" style="display: none;" title="Hapus pencarian" type="button">
+                                    <svg fill="currentColor" height="16" viewBox="0 0 16 16" width="16">
+                                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM5.354 4.646a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                    </svg>
+                                </button>
                                 <div class="search-dropdown" id="searchDropdown" style="display: none;">
                                     <!-- Autocomplete results will appear here -->
                                 </div>
