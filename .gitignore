@@ -18,6 +18,7 @@ target/
 *.iml
 *.ipr
 pgdata
+logs
 
 ### NetBeans ###
 /nbproject/private/
