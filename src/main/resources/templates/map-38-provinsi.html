@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Peta 38 Provinsi Indonesia</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!-- Leaflet CSS -->
+    <link crossorigin="" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          rel="stylesheet"/>
+
+    <style>
+        #map {
+            height: 650px;
+            width: 100%;
+            border: 2px solid #dee2e6;
+            border-radius: 0.25rem;
+        }
+
+        .map-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .info-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            min-height: 100px;
+        }
+
+        .legend {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .legend h6 {
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+
+        .legend-item {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border: 1px solid #333;
+            vertical-align: middle;
+            border-radius: 3px;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 0.25rem 0.25rem;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .search-dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+        .search-dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-dropdown-item.selected {
+            background-color: #e7f3ff;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .stats-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 0.25rem;
+            margin-bottom: 20px;
+        }
+
+        .stats-panel h4 {
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .province-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .province-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-layer {
+            margin: 2px;
+        }
+
+        .btn-layer.active {
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2>Peta 38 Provinsi Indonesia</h2>
+                <p class="text-muted">Visualisasi GeoJSON batas wilayah Provinsi dan Kabupaten/Kota Indonesia</p>
+            </div>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="row">
+            <div class="col-12">
+                <div class="stats-panel">
+                    <h4>Statistik Wilayah Indonesia</h4>
+                    <div class="row">
+                        <div class="col-md-4 stat-item">
+                            <div class="stat-number" id="statProvinsi">38</div>
+                            <div class="stat-label">Provinsi</div>
+                        </div>
+                        <div class="col-md-4 stat-item">
+                            <div class="stat-number" id="statKabupaten">-</div>
+                            <div class="stat-label">Kabupaten/Kota</div>
+                        </div>
+                        <div class="col-md-4 stat-item">
+                            <div class="stat-number" id="statSelected">-</div>
+                            <div class="stat-label">Wilayah Ditampilkan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Controls -->
+        <div class="row">
+            <div class="col-12">
+                <div class="map-controls">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label"><strong>Layer Peta:</strong></label>
+                            <div>
+                                <button class="btn btn-outline-primary btn-layer active" data-layer="provinsi" id="btnProvinsi">
+                                    Provinsi
+                                </button>
+                                <button class="btn btn-outline-warning btn-layer" data-layer="kabupaten" id="btnKabupaten">
+                                    Kabupaten/Kota
+                                </button>
+                                <button class="btn btn-outline-success btn-layer" data-layer="both" id="btnBoth">
+                                    Keduanya
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="searchWilayah"><strong>Cari Wilayah:</strong></label>
+                            <div class="search-container">
+                                <input autocomplete="off" class="form-control" id="searchWilayah"
+                                       placeholder="Ketik nama provinsi atau kabupaten..." type="text">
+                                <div class="search-dropdown" id="searchDropdown"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="filterProvinsi"><strong>Filter Provinsi:</strong></label>
+                            <select class="form-select" id="filterProvinsi">
+                                <option value="">Semua Provinsi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="btn btn-primary" id="btnLoadData">Muat Data</button>
+                            <button class="btn btn-secondary" id="btnClearMap">Bersihkan Peta</button>
+                            <button class="btn btn-info" id="btnResetView">Reset View</button>
+                            <button class="btn btn-success" id="btnShowAllProvinsi">Tampilkan Semua Provinsi</button>
+                            <span class="ms-3" id="loadingSpinner" style="display: none;">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                                Memuat data...
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="row">
+            <div class="col-12" style="position: relative;">
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Memuat data GeoJSON...</p>
+                    </div>
+                </div>
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="info-panel">
+                    <h5>Informasi Wilayah</h5>
+                    <div id="infoContent">
+                        <p class="text-muted">Klik pada wilayah di peta untuk melihat informasi detail.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-panel">
+                    <h5>Daftar Provinsi</h5>
+                    <div id="provinsiList" style="max-height: 200px; overflow-y: auto;">
+                        <p class="text-muted">Memuat daftar provinsi...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-5">
+            <div class="col-12">
+                <a class="btn btn-secondary" th:href="@{/}">Kembali ke Beranda</a>
+                <a class="btn btn-outline-primary" th:href="@{/map}">Lihat Peta Lainnya</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script crossorigin=""
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- jQuery -->
+    <script th:src="@{/js/jquery-3.3.1.slim.min.js}"></script>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <!-- Custom Map JavaScript -->
+    <script th:src="@{/js/map-38-provinsi.js}"></script>
+</body>
+</html>
