@@ -22,4 +22,9 @@ public class MapViewController {
     public String mapPage() {
         return "map";
     }
+
+    @GetMapping("/map-38-provinsi")
+    public String map38ProvinsiPage() {
+        return "map-38-provinsi";
+    }
 }
