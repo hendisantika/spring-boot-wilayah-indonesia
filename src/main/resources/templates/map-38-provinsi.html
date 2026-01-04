@@ -169,7 +169,7 @@
         <div class="row">
             <div class="col-12">
                 <h2>Peta 38 Provinsi Indonesia</h2>
-                <p class="text-muted">Visualisasi GeoJSON batas wilayah Provinsi dan Kabupaten/Kota Indonesia</p>
+                <p class="text-muted">Visualisasi GeoJSON batas wilayah Provinsi, Kabupaten/Kota, Kecamatan, dan Kelurahan/Desa Indonesia</p>
             </div>
         </div>
 
@@ -179,17 +179,25 @@
                 <div class="stats-panel">
                     <h4>Statistik Wilayah Indonesia</h4>
                     <div class="row">
-                        <div class="col-md-4 stat-item">
+                        <div class="col stat-item">
                             <div class="stat-number" id="statProvinsi">38</div>
                             <div class="stat-label">Provinsi</div>
                         </div>
-                        <div class="col-md-4 stat-item">
+                        <div class="col stat-item">
                             <div class="stat-number" id="statKabupaten">-</div>
                             <div class="stat-label">Kabupaten/Kota</div>
                         </div>
-                        <div class="col-md-4 stat-item">
+                        <div class="col stat-item">
+                            <div class="stat-number" id="statKecamatan">-</div>
+                            <div class="stat-label">Kecamatan</div>
+                        </div>
+                        <div class="col stat-item">
+                            <div class="stat-number" id="statKelurahan">-</div>
+                            <div class="stat-label">Kelurahan/Desa</div>
+                        </div>
+                        <div class="col stat-item">
                             <div class="stat-number" id="statSelected">-</div>
-                            <div class="stat-label">Wilayah Ditampilkan</div>
+                            <div class="stat-label">Ditampilkan</div>
                         </div>
                     </div>
                 </div>
@@ -200,9 +208,10 @@
         <div class="row">
             <div class="col-12">
                 <div class="map-controls">
+                    <!-- Layer Selection -->
                     <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Layer Peta:</strong></label>
+                        <div class="col-12">
+                            <label class="form-label"><strong>Tingkat Administrasi:</strong></label>
                             <div>
                                 <button class="btn btn-outline-primary btn-layer active" data-layer="provinsi" id="btnProvinsi">
                                     Provinsi
@@ -210,32 +219,64 @@
                                 <button class="btn btn-outline-warning btn-layer" data-layer="kabupaten" id="btnKabupaten">
                                     Kabupaten/Kota
                                 </button>
-                                <button class="btn btn-outline-success btn-layer" data-layer="both" id="btnBoth">
-                                    Keduanya
+                                <button class="btn btn-outline-success btn-layer" data-layer="kecamatan" id="btnKecamatan">
+                                    Kecamatan
+                                </button>
+                                <button class="btn btn-outline-danger btn-layer" data-layer="kelurahan" id="btnKelurahan">
+                                    Kelurahan/Desa
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                    </div>
+
+                    <!-- Search -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
                             <label class="form-label" for="searchWilayah"><strong>Cari Wilayah:</strong></label>
                             <div class="search-container">
                                 <input autocomplete="off" class="form-control" id="searchWilayah"
-                                       placeholder="Ketik nama provinsi atau kabupaten..." type="text">
+                                       placeholder="Ketik nama wilayah..." type="text">
                                 <div class="search-dropdown" id="searchDropdown"></div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="filterProvinsi"><strong>Filter Provinsi:</strong></label>
+                    </div>
+
+                    <!-- Cascading Filters -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterProvinsi"><strong>Provinsi:</strong></label>
                             <select class="form-select" id="filterProvinsi">
                                 <option value="">Semua Provinsi</option>
                             </select>
                         </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterKabupaten"><strong>Kabupaten/Kota:</strong></label>
+                            <select class="form-select" disabled id="filterKabupaten">
+                                <option value="">Pilih Provinsi Dulu</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterKecamatan"><strong>Kecamatan:</strong></label>
+                            <select class="form-select" disabled id="filterKecamatan">
+                                <option value="">Pilih Kabupaten Dulu</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterKelurahan"><strong>Kelurahan/Desa:</strong></label>
+                            <select class="form-select" disabled id="filterKelurahan">
+                                <option value="">Pilih Kecamatan Dulu</option>
+                            </select>
+                        </div>
                     </div>
+
+                    <!-- Action Buttons -->
                     <div class="row">
                         <div class="col-12">
                             <button class="btn btn-primary" id="btnLoadData">Muat Data</button>
                             <button class="btn btn-secondary" id="btnClearMap">Bersihkan Peta</button>
                             <button class="btn btn-info" id="btnResetView">Reset View</button>
                             <button class="btn btn-success" id="btnShowAllProvinsi">Tampilkan Semua Provinsi</button>
+                            <button class="btn btn-outline-secondary" id="btnClearFilters">Reset Filter</button>
                             <span class="ms-3" id="loadingSpinner" style="display: none;">
                                 <span class="spinner-border spinner-border-sm" role="status"></span>
                                 Memuat data...
