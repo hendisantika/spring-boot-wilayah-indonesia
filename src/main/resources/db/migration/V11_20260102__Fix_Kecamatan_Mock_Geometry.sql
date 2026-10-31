@@ -26,26 +26,26 @@ UPDATE kecamatan SET geom = ST_Multi(ST_GeomFromText(
 UPDATE kelurahan SET geom = ST_Multi(ST_GeomFromText(
     'POLYGON((106.81 -6.185, 106.82 -6.185, 106.82 -6.175, 106.81 -6.175, 106.81 -6.185))',
     4326
-)) WHERE nama ILIKE '%MENTENG%' AND nama NOT ILIKE '%CIKINI%'
+)) WHERE id = (SELECT id FROM kelurahan WHERE nama ILIKE '%MENTENG%' AND nama NOT ILIKE '%CIKINI%'
     AND id_kecamatan IN (SELECT id FROM kecamatan WHERE nama ILIKE '%MENTENG%'
         AND id_kota IN (SELECT id FROM kota WHERE nama ILIKE '%JAKARTA PUSAT%'))
-LIMIT 1;
+    LIMIT 1);
 
 UPDATE kelurahan SET geom = ST_Multi(ST_GeomFromText(
     'POLYGON((106.82 -6.185, 106.83 -6.185, 106.83 -6.175, 106.82 -6.175, 106.82 -6.185))',
     4326
-)) WHERE nama ILIKE '%CIKINI%'
+)) WHERE id = (SELECT id FROM kelurahan WHERE nama ILIKE '%CIKINI%'
     AND id_kecamatan IN (SELECT id FROM kecamatan WHERE nama ILIKE '%MENTENG%'
         AND id_kota IN (SELECT id FROM kota WHERE nama ILIKE '%JAKARTA PUSAT%'))
-LIMIT 1;
+    LIMIT 1);
 
 UPDATE kelurahan SET geom = ST_Multi(ST_GeomFromText(
     'POLYGON((106.81 -6.175, 106.82 -6.175, 106.82 -6.165, 106.81 -6.165, 106.81 -6.175))',
     4326
-)) WHERE nama ILIKE '%GONDANGDIA%'
+)) WHERE id = (SELECT id FROM kelurahan WHERE nama ILIKE '%GONDANGDIA%'
     AND id_kecamatan IN (SELECT id FROM kecamatan WHERE nama ILIKE '%MENTENG%'
         AND id_kota IN (SELECT id FROM kota WHERE nama ILIKE '%JAKARTA PUSAT%'))
-LIMIT 1;
+    LIMIT 1);
 
 -- Verify updates
 DO $$

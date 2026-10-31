@@ -1,6 +1,37 @@
 -- Match GADM staging table geometries to existing administrative records
 -- Uses fuzzy name matching with UPPER() to handle case differences
 
+-- Staging tables are normally populated by scripts/import-boundaries.sh
+-- (ogr2ogr with -lco OVERWRITE=YES). Create them empty when the import has not
+-- been run (e.g. fresh databases, CI / Testcontainers) so this migration still
+-- succeeds; V10/V11 then provide mock geometries.
+CREATE TABLE IF NOT EXISTS gadm_provinsi_staging (
+    ogc_fid SERIAL PRIMARY KEY,
+    name_1  VARCHAR(255),
+    geom    geometry(MultiPolygon, 4326)
+);
+CREATE TABLE IF NOT EXISTS gadm_kota_staging (
+    ogc_fid SERIAL PRIMARY KEY,
+    name_1  VARCHAR(255),
+    name_2  VARCHAR(255),
+    geom    geometry(MultiPolygon, 4326)
+);
+CREATE TABLE IF NOT EXISTS gadm_kecamatan_staging (
+    ogc_fid SERIAL PRIMARY KEY,
+    name_1  VARCHAR(255),
+    name_2  VARCHAR(255),
+    name_3  VARCHAR(255),
+    geom    geometry(MultiPolygon, 4326)
+);
+CREATE TABLE IF NOT EXISTS gadm_kelurahan_staging (
+    ogc_fid SERIAL PRIMARY KEY,
+    name_1  VARCHAR(255),
+    name_2  VARCHAR(255),
+    name_3  VARCHAR(255),
+    name_4  VARCHAR(255),
+    geom    geometry(MultiPolygon, 4326)
+);
+
 -- Update Provinsi geometries
 UPDATE provinsi p
 SET geom = g.geom
@@ -22,9 +53,9 @@ END $$;
 -- Update Kota geometries
 UPDATE kota k
 SET geom = g.geom
-FROM gadm_kota_staging g
-INNER JOIN provinsi p ON k.id_provinsi = p.id
-WHERE UPPER(TRIM(k.nama)) = UPPER(TRIM(g.name_2))
+FROM gadm_kota_staging g, provinsi p
+WHERE k.id_provinsi = p.id
+  AND UPPER(TRIM(k.nama)) = UPPER(TRIM(g.name_2))
   AND UPPER(TRIM(p.nama)) = UPPER(TRIM(g.name_1));
 
 -- Verify kota match count
@@ -42,10 +73,10 @@ END $$;
 -- Update Kecamatan geometries
 UPDATE kecamatan kec
 SET geom = g.geom
-FROM gadm_kecamatan_staging g
-INNER JOIN kota k ON kec.id_kota = k.id
-INNER JOIN provinsi p ON k.id_provinsi = p.id
-WHERE UPPER(TRIM(kec.nama)) = UPPER(TRIM(g.name_3))
+FROM gadm_kecamatan_staging g, kota k, provinsi p
+WHERE kec.id_kota = k.id
+  AND k.id_provinsi = p.id
+  AND UPPER(TRIM(kec.nama)) = UPPER(TRIM(g.name_3))
   AND UPPER(TRIM(k.nama)) = UPPER(TRIM(g.name_2))
   AND UPPER(TRIM(p.nama)) = UPPER(TRIM(g.name_1));
 
@@ -64,11 +95,11 @@ END $$;
 -- Update Kelurahan geometries
 UPDATE kelurahan kel
 SET geom = g.geom
-FROM gadm_kelurahan_staging g
-INNER JOIN kecamatan kec ON kel.id_kecamatan = kec.id
-INNER JOIN kota k ON kec.id_kota = k.id
-INNER JOIN provinsi p ON k.id_provinsi = p.id
-WHERE UPPER(TRIM(kel.nama)) = UPPER(TRIM(g.name_4))
+FROM gadm_kelurahan_staging g, kecamatan kec, kota k, provinsi p
+WHERE kel.id_kecamatan = kec.id
+  AND kec.id_kota = k.id
+  AND k.id_provinsi = p.id
+  AND UPPER(TRIM(kel.nama)) = UPPER(TRIM(g.name_4))
   AND UPPER(TRIM(kec.nama)) = UPPER(TRIM(g.name_3))
   AND UPPER(TRIM(k.nama)) = UPPER(TRIM(g.name_2))
   AND UPPER(TRIM(p.nama)) = UPPER(TRIM(g.name_1));
