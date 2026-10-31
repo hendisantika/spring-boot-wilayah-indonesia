@@ -1,5 +1,11 @@
 # Spring Boot Wilayah Indonesia
 
+[![Java CI with Maven](https://github.com/hendisantika/spring-boot-wilayah-indonesia/actions/workflows/maven.yml/badge.svg)](https://github.com/hendisantika/spring-boot-wilayah-indonesia/actions/workflows/maven.yml)
+![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.2-6DB33F?logo=springboot)
+![PostGIS](https://img.shields.io/badge/PostGIS-16--3.4-336791?logo=postgresql)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot)](.github/dependabot.yml)
+
 A Spring Boot application for managing Indonesian administrative regions (Provinsi, Kota/Kabupaten, Kecamatan, Kelurahan) with interactive map visualization using PostGIS and Leaflet.js.
 
 ## Features
@@ -39,19 +45,23 @@ A Spring Boot application for managing Indonesian administrative regions (Provin
 
 ## Technology Stack
 
-- **Backend**: Spring Boot 4.0.1
-- **Database**: PostgreSQL 18 with PostGIS 3.4
-- **ORM**: Spring Data JPA with Hibernate Spatial
-- **Frontend**: Thymeleaf, Bootstrap 4, Leaflet.js 1.9.4
+- **Language**: Java 25 (LTS)
+- **Backend**: Spring Boot 4.1.2 (Spring Framework 7)
+- **JSON**: Jackson 3 (`tools.jackson`) with custom GeoJSON (de)serializers
+- **Database**: PostgreSQL 16 with PostGIS 3.4 (`postgis/postgis:16-3.4`)
+- **ORM**: Spring Data JPA with Hibernate 7 + Hibernate Spatial
+- **Frontend**: Thymeleaf, Bootstrap 4, Leaflet.js 1.9.4 and a Next.js 16 app in `frontend/`
 - **Geospatial**: JTS Topology Suite, PostGIS
-- **Migration**: Flyway
-- **Build Tool**: Maven
+- **Migration**: Flyway (`spring-boot-starter-flyway`)
+- **Testing**: JUnit 5, Testcontainers 2 (PostGIS)
+- **Build Tool**: Maven (wrapper included)
+- **CI/CD**: GitHub Actions + Dependabot
 
 ## Prerequisites
 
-- Java 21+
-- Maven 3.6+
-- Docker & Docker Compose
+- Java 25 (e.g. Eclipse Temurin 25)
+- Maven 3.9+ (or just use the bundled `./mvnw` wrapper)
+- Docker & Docker Compose (also required by the Testcontainers-based tests)
 - GDAL/OGR tools (for GADM data import)
 
 ## Quick Start
@@ -77,8 +87,11 @@ spring.datasource.password=53cret
 
 ### 4. Run the Application
 ```bash
-mvn clean spring-boot:run
+./mvnw clean spring-boot:run
 ```
+
+Flyway applies all migrations on startup (schema, administrative data, PostGIS
+extension and mock geometries), then Hibernate validates the schema.
 
 ### 5. Access the Application
 - **Main Application**: http://localhost:8080
@@ -192,6 +205,34 @@ GET /api/map/kelurahan?kecamatanId={id} # Village boundaries
 - **Info Panel** displays detailed information
 - **Clean rendering** - only polygon boundaries displayed (no markers or dots)
 
+## Testing
+
+```bash
+./mvnw verify
+```
+
+The integration tests start a throwaway `postgis/postgis:16-3.4` container with
+[Testcontainers](https://testcontainers.com/) (wired via `@ServiceConnection`), run every
+Flyway migration against it, validate the JPA schema and exercise the REST API.
+No local database is needed, only a running Docker daemon.
+
+## CI/CD
+
+- **GitHub Actions** ([`.github/workflows/maven.yml`](.github/workflows/maven.yml)) builds and tests every
+  push and pull request to `main` on Temurin JDK 25 with `./mvnw -B verify`, then submits the
+  Maven dependency graph on pushes to `main` for better Dependabot alerts.
+- **Dependabot** ([`.github/dependabot.yml`](.github/dependabot.yml)) keeps these up to date:
+
+  | Ecosystem        | Directory   | Schedule        | Grouping                                                  |
+  |------------------|-------------|-----------------|-----------------------------------------------------------|
+  | Maven            | `/`         | daily (05:00 WIB) | Spring, Hibernate/JTS, database, testing, plugins, minor/patch |
+  | npm              | `/frontend` | weekly (Mon)    | Next.js/React, Leaflet, dev tooling                       |
+  | Docker           | `/`         | weekly (Mon)    | `eclipse-temurin` kept on the Java 25 line                |
+  | Docker Compose   | `/`         | weekly (Mon)    | PostGIS image                                             |
+  | GitHub Actions   | `/`         | weekly (Mon)    | all actions in one PR                                     |
+
+  PRs are labelled and use conventional commit prefixes (`build(deps)`, `build(docker)`, `ci(deps)`).
+
 ## Database Schema
 
 ### Administrative Tables
@@ -221,28 +262,39 @@ spring-boot-wilayah-indonesia/
 │   │   │   ├── controller/       # REST & View controllers
 │   │   │   ├── entity/          # JPA entities with PostGIS support
 │   │   │   ├── repository/      # Spring Data JPA repositories
-│   │   │   └── config/          # Geometry serializers
+│   │   │   └── config/          # Jackson 3 GeoJSON module, serializers, CORS
 │   │   ├── resources/
 │   │   │   ├── db/migration/    # Flyway migrations
 │   │   │   ├── static/
 │   │   │   │   ├── js/          # Leaflet map logic
 │   │   │   │   └── css/         # Bootstrap styles
 │   │   │   └── templates/       # Thymeleaf templates
-│   └── test/                     # Unit tests
+│   └── test/                     # Integration tests (Testcontainers + PostGIS)
+├── frontend/                     # Next.js + Leaflet frontend
 ├── scripts/                      # GADM import scripts
+├── .github/                      # GitHub Actions workflow & Dependabot config
+├── Dockerfile                    # eclipse-temurin:25-jre runtime image
 ├── docker-compose.yml            # PostgreSQL + PostGIS
 └── pom.xml                       # Maven dependencies
 ```
 
-## Docker Compose
+## Docker
 
-Run with Docker:
+Start only the PostGIS database (port `5434`) for local development:
 ```bash
-mvn clean package
-docker-compose up
+docker compose up -d db
 ```
 
-Access at: http://localhost:8000
+Build and run the application image (Java 25, `eclipse-temurin:25-jre`):
+```bash
+./mvnw clean package -DskipTests
+docker build -t wilayah-indo-app .
+docker run --rm -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5434/wilayah_indonesia \
+  wilayah-indo-app
+```
+
+Access at: http://localhost:8080
 
 ## Screenshots
 
@@ -312,9 +364,10 @@ Flyway migrations handle schema evolution:
 - `V1-V6`: Initial schema and data
 - `V7`: PostGIS extension
 - `V8`: Geometry columns and spatial indexes
-- `V9`: GADM geometry matching
-- `V10-V11`: Mock data for testing
-- `V12`: GADM staging tables
+- `V9`: GADM geometry matching (uses the `gadm_*_staging` tables loaded by
+  `scripts/import-boundaries.sh`; creates them empty if the import was not run)
+- `V10-V11`: Mock geometries for testing
+- `V12`: GADM level staging tables
 
 ## Contributing
 
