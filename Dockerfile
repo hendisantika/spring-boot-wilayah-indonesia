@@ -1,5 +1,5 @@
-# Start with a base image containing Java runtime
-FROM openjdk:11
+# Runtime image with Java 25 (Eclipse Temurin JRE)
+FROM eclipse-temurin:25-jre
 
 # Add Maintainer Info
 LABEL maintainer="hendisantika@yahoo.co.id"
@@ -14,7 +14,7 @@ EXPOSE 8080
 ARG JAR_FILE=target/spring-boot-wilayah-indonesia-0.0.1-SNAPSHOT.jar
 
 # Add the application's jar to the container
-ADD ${JAR_FILE} app.jar
+COPY ${JAR_FILE} app.jar
 
 # Run the jar file
 ENTRYPOINT ["java","-Dspring.profiles.active=docker","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
