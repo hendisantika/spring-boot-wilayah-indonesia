@@ -1,13 +1,131 @@
 version: 2
 updates:
+  # Backend: Spring Boot / Maven dependencies
   - package-ecosystem: maven
     directory: "/"
     schedule:
       interval: daily
-      time: '05:00'
+      time: "05:00"
       timezone: Asia/Jakarta
     open-pull-requests-limit: 10
-  - package-ecosystem: "github-actions"
+    labels:
+      - dependencies
+      - java
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+      include: scope
+    groups:
+      spring-boot:
+        patterns:
+          - "org.springframework.boot*"
+          - "org.springframework*"
+      hibernate-spatial:
+        patterns:
+          - "org.hibernate*"
+          - "org.locationtech.jts*"
+      database:
+        patterns:
+          - "org.flywaydb*"
+          - "org.postgresql*"
+      testing:
+        patterns:
+          - "org.testcontainers*"
+          - "org.junit*"
+          - "org.assertj*"
+          - "org.mockito*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins*"
+          - "*maven-plugin"
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # Frontend: Next.js app (bun.lockb is binary, so Dependabot updates package.json)
+  - package-ecosystem: npm
+    directory: "/frontend"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Jakarta
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - frontend
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+      include: scope
+    groups:
+      next-react:
+        patterns:
+          - "next"
+          - "eslint-config-next"
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      leaflet:
+        patterns:
+          - "leaflet"
+          - "react-leaflet"
+          - "@types/leaflet"
+      tooling:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+
+  # Container base image
+  - package-ecosystem: docker
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Jakarta
+    labels:
+      - dependencies
+      - docker
+    commit-message:
+      prefix: "build(docker)"
+    ignore:
+      # Stay on the Java 25 LTS line; bump the major deliberately
+      - dependency-name: "eclipse-temurin"
+        update-types:
+          - version-update:semver-major
+
+  # Local PostGIS service in docker-compose.yml
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Jakarta
+    labels:
+      - dependencies
+      - docker
+    commit-message:
+      prefix: "build(docker)"
+
+  # GitHub Actions used in workflows
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Jakarta
+    labels:
+      - dependencies
+      - github_actions
+    commit-message:
+      prefix: "ci(deps)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
