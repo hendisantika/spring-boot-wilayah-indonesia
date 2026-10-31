@@ -1,15 +1,22 @@
 package com.hendisantika.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.module.SimpleModule;
+
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * Project : spring-boot-wilayah-indonesia
@@ -22,51 +29,32 @@ import org.springframework.context.annotation.Primary;
  */
 
 /**
- * Jackson configuration for GeoJSON serialization
+ * Jackson 3 configuration for GeoJSON serialization.
+ * <p>
+ * Spring Boot 4 automatically registers every {@link JacksonModule} bean on its
+ * auto-configured {@code JsonMapper}, so we only contribute the geometry module
+ * instead of replacing the whole mapper.
  */
 @Configuration
 public class JacksonConfig {
 
+    private static final List<Class<? extends Geometry>> GEOMETRY_TYPES = List.of(
+            Geometry.class, Point.class, LineString.class, Polygon.class,
+            MultiPoint.class, MultiLineString.class, MultiPolygon.class, GeometryCollection.class);
+
     @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        // Disable default typing to prevent introspection issues
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
-        mapper.disable(MapperFeature.AUTO_DETECT_GETTERS);
-        mapper.disable(MapperFeature.AUTO_DETECT_IS_GETTERS);
-
-        // Create geometry module with custom serializers
+    public JacksonModule geometryModule() {
         SimpleModule geometryModule = new SimpleModule("GeometryModule");
 
-        // Register serializers for all geometry types
-        geometryModule.addSerializer(Geometry.class, new GeometrySerializer());
-        geometryModule.addSerializer(Point.class, new GeometrySerializer());
-        geometryModule.addSerializer(LineString.class, new GeometrySerializer());
-        geometryModule.addSerializer(Polygon.class, new GeometrySerializer());
-        geometryModule.addSerializer(MultiPoint.class, new GeometrySerializer());
-        geometryModule.addSerializer(MultiLineString.class, new GeometrySerializer());
-        geometryModule.addSerializer(MultiPolygon.class, new GeometrySerializer());
-        geometryModule.addSerializer(GeometryCollection.class, new GeometrySerializer());
+        GeometrySerializer serializer = new GeometrySerializer();
+        for (Class<? extends Geometry> type : GEOMETRY_TYPES) {
+            geometryModule.addSerializer(type, serializer);
+            // Prevent Jackson from introspecting Geometry bean properties
+            geometryModule.setMixInAnnotation(type, GeometryMixin.class);
+        }
 
-        // Register deserializer
         geometryModule.addDeserializer(Geometry.class, new GeometryDeserializer());
-
-        mapper.registerModule(geometryModule);
-
-        // Add mix-ins to ignore Geometry bean properties
-        mapper.addMixIn(Geometry.class, GeometryMixin.class);
-        mapper.addMixIn(Point.class, GeometryMixin.class);
-        mapper.addMixIn(LineString.class, GeometryMixin.class);
-        mapper.addMixIn(Polygon.class, GeometryMixin.class);
-        mapper.addMixIn(MultiPoint.class, GeometryMixin.class);
-        mapper.addMixIn(MultiLineString.class, GeometryMixin.class);
-        mapper.addMixIn(MultiPolygon.class, GeometryMixin.class);
-        mapper.addMixIn(GeometryCollection.class, GeometryMixin.class);
-
-        return mapper;
+        return geometryModule;
     }
 
     /**

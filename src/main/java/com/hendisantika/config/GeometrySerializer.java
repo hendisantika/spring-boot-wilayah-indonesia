@@ -1,11 +1,10 @@
 package com.hendisantika.config;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 import org.locationtech.jts.geom.*;
 
-import java.io.IOException;
 /**
  * Created by IntelliJ IDEA.
  * Project : spring-boot-wilayah-indonesia
@@ -20,18 +19,17 @@ import java.io.IOException;
 /**
  * Converts JTS Geometry objects to GeoJSON format for REST API responses
  */
-public class GeometrySerializer extends JsonSerializer<Geometry> {
+public class GeometrySerializer extends ValueSerializer<Geometry> {
 
     @Override
-    public void serialize(Geometry value, JsonGenerator gen, SerializerProvider serializers)
-            throws IOException {
+    public void serialize(Geometry value, JsonGenerator gen, SerializationContext ctxt) {
         if (value == null) {
             gen.writeNull();
             return;
         }
 
         gen.writeStartObject();
-        gen.writeStringField("type", value.getGeometryType());
+        gen.writeStringProperty("type", value.getGeometryType());
 
         if (value instanceof Point) {
             writePointCoordinates(gen, (Point) value);
@@ -50,16 +48,16 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
         gen.writeEndObject();
     }
 
-    private void writePointCoordinates(JsonGenerator gen, Point point) throws IOException {
-        gen.writeFieldName("coordinates");
+    private void writePointCoordinates(JsonGenerator gen, Point point) {
+        gen.writeName("coordinates");
         gen.writeStartArray();
         gen.writeNumber(point.getX());
         gen.writeNumber(point.getY());
         gen.writeEndArray();
     }
 
-    private void writeLineStringCoordinates(JsonGenerator gen, LineString lineString) throws IOException {
-        gen.writeFieldName("coordinates");
+    private void writeLineStringCoordinates(JsonGenerator gen, LineString lineString) {
+        gen.writeName("coordinates");
         gen.writeStartArray();
         for (Coordinate coord : lineString.getCoordinates()) {
             gen.writeStartArray();
@@ -70,8 +68,8 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
         gen.writeEndArray();
     }
 
-    private void writePolygonCoordinates(JsonGenerator gen, Polygon polygon) throws IOException {
-        gen.writeFieldName("coordinates");
+    private void writePolygonCoordinates(JsonGenerator gen, Polygon polygon) {
+        gen.writeName("coordinates");
         gen.writeStartArray();
 
         // Exterior ring
@@ -85,8 +83,8 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
         gen.writeEndArray();
     }
 
-    private void writeMultiPointCoordinates(JsonGenerator gen, MultiPoint multiPoint) throws IOException {
-        gen.writeFieldName("coordinates");
+    private void writeMultiPointCoordinates(JsonGenerator gen, MultiPoint multiPoint) {
+        gen.writeName("coordinates");
         gen.writeStartArray();
         for (int i = 0; i < multiPoint.getNumGeometries(); i++) {
             Point point = (Point) multiPoint.getGeometryN(i);
@@ -98,8 +96,8 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
         gen.writeEndArray();
     }
 
-    private void writeMultiLineStringCoordinates(JsonGenerator gen, MultiLineString multiLineString) throws IOException {
-        gen.writeFieldName("coordinates");
+    private void writeMultiLineStringCoordinates(JsonGenerator gen, MultiLineString multiLineString) {
+        gen.writeName("coordinates");
         gen.writeStartArray();
         for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
             LineString lineString = (LineString) multiLineString.getGeometryN(i);
@@ -115,8 +113,8 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
         gen.writeEndArray();
     }
 
-    private void writeMultiPolygonCoordinates(JsonGenerator gen, MultiPolygon multiPolygon) throws IOException {
-        gen.writeFieldName("coordinates");
+    private void writeMultiPolygonCoordinates(JsonGenerator gen, MultiPolygon multiPolygon) {
+        gen.writeName("coordinates");
         gen.writeStartArray();
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
             Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
@@ -135,7 +133,7 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
         gen.writeEndArray();
     }
 
-    private void writeLinearRing(JsonGenerator gen, LineString ring) throws IOException {
+    private void writeLinearRing(JsonGenerator gen, LineString ring) {
         gen.writeStartArray();
         for (Coordinate coord : ring.getCoordinates()) {
             gen.writeStartArray();

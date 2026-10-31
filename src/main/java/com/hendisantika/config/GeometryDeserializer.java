@@ -1,12 +1,12 @@
 package com.hendisantika.config;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.JsonNode;
 import org.locationtech.jts.geom.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +24,14 @@ import java.util.List;
 /**
  * Converts GeoJSON format to JTS Geometry objects for database persistence
  */
-public class GeometryDeserializer extends JsonDeserializer<Geometry> {
+public class GeometryDeserializer extends ValueDeserializer<Geometry> {
 
     private static final GeometryFactory geometryFactory = new GeometryFactory();
 
     @Override
-    public Geometry deserialize(JsonParser p, DeserializationContext ctxt)
-            throws IOException {
-        JsonNode node = p.readValueAsTree();
-        String type = node.get("type").asText();
+    public Geometry deserialize(JsonParser p, DeserializationContext ctxt) {
+        JsonNode node = ctxt.readTree(p);
+        String type = node.get("type").asString();
         JsonNode coordinates = node.get("coordinates");
 
         return switch (type) {
@@ -42,7 +41,7 @@ public class GeometryDeserializer extends JsonDeserializer<Geometry> {
             case "MultiPoint" -> parseMultiPoint(coordinates);
             case "MultiLineString" -> parseMultiLineString(coordinates);
             case "MultiPolygon" -> parseMultiPolygon(coordinates);
-            default -> throw new IOException("Unsupported geometry type: " + type);
+            default -> throw InvalidFormatException.from(p, "Unsupported geometry type: " + type, type, Geometry.class);
         };
     }
 
